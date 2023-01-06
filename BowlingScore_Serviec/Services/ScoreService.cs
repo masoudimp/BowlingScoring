@@ -24,7 +24,7 @@ namespace BowlingScore_Serviec.Services
         public int Roll(int score)
         {
 
-            if (score.IsStrike() && rollCount < 19)
+            if (score.IsStrike() && rollCount < 19 && previousRolls.Count == 0)
                 rollCount += 2;
             else
                 rollCount++;
@@ -36,6 +36,10 @@ namespace BowlingScore_Serviec.Services
 
             if (rollCount == 22)
             {
+                if(lastFrameScores.Count > 3)
+                {
+                    previousRolls.RemoveAt(0);
+                }
                 currentScore += lastFrameScores.Sum();
                 return currentScore;
             }
