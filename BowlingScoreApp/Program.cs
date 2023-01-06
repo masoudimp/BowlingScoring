@@ -106,7 +106,7 @@ namespace BowlingScoreApp
 
                     if (roll == 2)
                     {
-                        if (tempFirstFrame10Score + score < 10)
+                        if (tempFirstFrame10Score + score <= 10)
                             isGameFinished = true;
                     }
 
