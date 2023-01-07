@@ -2,6 +2,9 @@
 using BowlingScoreApp.Helpers.Validations;
 using System;
 using BowlingScore_Serviec.Services;
+using BowlingScore_Serviec.ViewModelsOrModels;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BowlingScoreApp
 {
@@ -28,16 +31,15 @@ namespace BowlingScoreApp
             int tempFirstFrame10Score = 0;
             int previousScore = 0;
             int score = 0;
-            int currentScore = 0;
+            List<Frame> currentScore = new List<Frame>();
             int previousCurrentScore = 0;
 
 
             for (int i = 0; i < 23; i++)
             {
-                previousCurrentScore = currentScore;
+
 
                 #region Roll and Frame Numbers
-
 
                 if (i == 0)
                     roll = 1;   // It means the first roll is always roll number 1
@@ -52,14 +54,14 @@ namespace BowlingScoreApp
 
                 #region Input Output
 
-                var input = io.InputOutputHandler(roll, frame);
+                var input = io.InputOutputHandler((i == 0) ? 1 : roll, (i == 0) ? 1 : frame);
 
                 //Input Validation
                 while (!input.InputValidation())
                     input = Console.ReadLine().FixText();
-                
 
-                if(frame != 10)
+
+                if (frame != 10)
                 {
                     while (!input.SecondInputValidate(previousScore))
                         input = Console.ReadLine().FixText();
@@ -116,22 +118,11 @@ namespace BowlingScoreApp
 
                 #endregion
 
-
                 currentScore = scoreService.Roll(score);
 
-                if(previousCurrentScore != currentScore)
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine("Latest Score: " + currentScore);
-                    Console.ResetColor();
-                }
-                else
-                {
-                    //Console.ForegroundColor = ConsoleColor.White;
-                    //Console.WriteLine("Score depends on the next row...");
-                    //Console.ResetColor();
-                }
-
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Latest Score: " + currentScore.Where(_ => _.Score != 0 && !_.IsNoScore).Select(_ => _.Score).LastOrDefault());
+                Console.ResetColor();
 
                 if (roll == 2)
                     previousScore = 0;
@@ -148,7 +139,7 @@ namespace BowlingScoreApp
             var finalScore = scoreService.CalculateScore();
 
             Console.WriteLine(finalScore.ToString());
-            io.ShowLogo(currentScore.ToString());
+            io.ShowLogo(currentScore.Where(_ => _.Score != 0 && !_.IsNoScore).Select(_ => _.Score).LastOrDefault().ToString());
 
             Console.ReadKey();
         }
